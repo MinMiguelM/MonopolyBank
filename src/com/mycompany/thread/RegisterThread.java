@@ -48,7 +48,6 @@ public class RegisterThread extends Thread implements Runnable{
                 if(!exit){
                     ObjectInputStream buffer = new ObjectInputStream(cliente.getInputStream());
                     Player player = (Player)buffer.readObject();
-                    player.setMoney(1500);
                     players.put(lastId, player);
                     playersSocket.put(lastId++, cliente);
                     main.addToTable(player.getName());
@@ -64,9 +63,10 @@ public class RegisterThread extends Thread implements Runnable{
         return this.players;
     }
     
-    public void exit() throws Exception{
+    public void exit(int money) throws Exception{
         this.exit = true;
         Socket cliente = null;
+        this.setMoney(money);
         ticket.setPlayers(players);
         ticket.loadProperties();
         Set<Integer> playersKey = playersSocket.keySet();
@@ -76,6 +76,13 @@ public class RegisterThread extends Thread implements Runnable{
             ObjectOutputStream bufferOut = new ObjectOutputStream(cliente.getOutputStream());
             bufferOut.writeObject(ticket);
             cliente.close();
+        }
+    }
+    
+    public void setMoney(int money){
+        Set<Integer> set = players.keySet();
+        for (Integer i : set) {
+            players.get(i).setMoney(money);
         }
     }
 }

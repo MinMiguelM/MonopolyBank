@@ -184,7 +184,7 @@ public class MainGUI extends javax.swing.JFrame {
             if(jTextField1.getText().equals("") || jTextField2.getText().equals("")){
                 JOptionPane.showMessageDialog(null, "Campos vacios.","Error",JOptionPane.ERROR_MESSAGE);
             }else{
-                rt.exit();
+                rt.exit(Integer.parseInt(jTextField1.getText().toString()));
                 BankWin bank = new BankWin(rt.getPlayers(),jTextField2.getText());
                 this.setVisible(false);
                 bank.setVisible(true);
