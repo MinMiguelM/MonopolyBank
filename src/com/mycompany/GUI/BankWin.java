@@ -26,13 +26,13 @@ public class BankWin extends javax.swing.JFrame {
 
     private Map<Integer,Player> players;
     private CoordinatorThread ct;
-    private int toll = 200;
+    private int toll;
     private ImageIcon img = new ImageIcon(getClass().getResource("/iconos/icon.png"));
     
     /**
      * Creates new form BankWin
      */
-    public BankWin(Map<Integer,Player> players) {
+    public BankWin(Map<Integer,Player> players, String toll) {
         initComponents();
         initImages();
         setIconImage(img.getImage());
@@ -43,6 +43,7 @@ public class BankWin extends javax.swing.JFrame {
         initTable();
         ct = new CoordinatorThread(this);
         ct.start();
+        this.toll = Integer.parseInt(toll);
     }
     
     public Map<Integer,Player> getPlayers(){
