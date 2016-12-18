@@ -10,6 +10,7 @@ import com.mycompany.data.ObjectRequest;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,13 +54,32 @@ public class UniqueThread extends Thread implements Runnable{
     
     public void pago() throws Exception{
         Socket socket = null;
+        int id;
         if(request.getToPlayer() == -1){
             int lottery = bank.getJTextFieldLottery();
             lottery += request.getValue();
             bank.setJTextFieldLottery(lottery+"");
+            return;
+        }else if(request.getToPlayer() == -2 || request.getToPlayer() >= 98){
+            // broadcast
+            // operation = id*100 -2 it's helpful to identify the source player
+            // when the type of payment is broadcast.
+            // playerTo + 2 / 100 == id source player
+            request.setValue(request.getValue() / (bank.getPlayers().size() - 1));
+            id = (request.getToPlayer() + 2) / 100;
+            Set<Integer> set = bank.getPlayers().keySet();
+            for (Integer i : set) {
+                if(i != id){
+                    socket = new Socket(bank.getPlayers().get(i).getIp(),port);
+                    request.setOperation(2);
+                    // go to other player
+                    ObjectOutputStream bufferOut = new ObjectOutputStream(socket.getOutputStream());
+                    bufferOut.writeObject(request);
+                }
+            }
         }else{
-            socket = new Socket(bank.getPlayers().
-                    get(request.getToPlayer()).getIp(),port);
+            id = request.getToPlayer();
+            socket = new Socket(bank.getPlayers().get(id).getIp(),port);
             request.setOperation(2);
             // go to other player
             ObjectOutputStream bufferOut = new ObjectOutputStream(socket.getOutputStream());
