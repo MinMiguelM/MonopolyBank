@@ -91,7 +91,6 @@ public class BankWin extends javax.swing.JFrame {
     
     public void updateTableMoney(int id, int value){
         players.get(id).setMoney(players.get(id).getMoney()+value);
-        initTable();
     }
     
     public void deletePlayer(int id){
@@ -368,7 +367,8 @@ public class BankWin extends javax.swing.JFrame {
         if(selection == -1){
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
-            players.get(selection).setPrison(players.get(selection).getPrison()+1);
+            int id = findIDPlayer(jTable1.getValueAt(selection, 0).toString());
+            players.get(id).setPrison(players.get(id).getPrison()+1);
             initTable();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -379,12 +379,13 @@ public class BankWin extends javax.swing.JFrame {
         if(selection == -1){
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
+            int id = findIDPlayer(jTable1.getValueAt(selection, 0).toString());
             int prison = (int) jTable1.getValueAt(selection, 1);
             prison--;
             if(prison < 0)
-                players.get(selection).setPrison(0);
+                players.get(id).setPrison(0);
             else
-                players.get(selection).setPrison(prison);
+                players.get(id).setPrison(prison);
             initTable();
         }
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -395,13 +396,14 @@ public class BankWin extends javax.swing.JFrame {
         if(selection == -1){
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
+            int id = findIDPlayer(jTable1.getValueAt(selection, 0).toString());
             int prison = (int)jTable1.getValueAt(selection, 1);
             String name = (String)jTable1.getValueAt(selection, 0);
             if(prison > 0)
                 JOptionPane.showMessageDialog(null,"Jugador no puede recibir peaje",
                         "ERROR",JOptionPane.ERROR_MESSAGE);
             else{
-                players.get(selection).setMoney(players.get(selection).getMoney()+toll);
+                players.get(id).setMoney(players.get(id).getMoney()+toll);
                 Player player = findPlayer(name);
                 ObjectRequest obj = new ObjectRequest();
                 obj.setOperation(2);
@@ -419,7 +421,8 @@ public class BankWin extends javax.swing.JFrame {
         if(selection == -1){
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
-            players.get(selection).setMoney(players.get(selection).getMoney()+Integer.parseInt(jTextField3.getText()));
+            int id = findIDPlayer(jTable1.getValueAt(selection, 0).toString());
+            players.get(id).setMoney(players.get(id).getMoney()+Integer.parseInt(jTextField3.getText()));
             String name = (String)jTable1.getValueAt(selection, 0);
             Player player = findPlayer(name);
             ObjectRequest obj = new ObjectRequest();
@@ -438,7 +441,8 @@ public class BankWin extends javax.swing.JFrame {
         if(selection == -1){
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
-            players.get(selection).setMoney(players.get(selection).getMoney()+Integer.parseInt(jTextField1.getText()));
+            int id = findIDPlayer(jTable1.getValueAt(selection, 0).toString());
+            players.get(id).setMoney(players.get(id).getMoney()+Integer.parseInt(jTextField1.getText()));
             String name = (String)jTable1.getValueAt(selection, 0);
             Player player = findPlayer(name);
             ObjectRequest obj = new ObjectRequest();

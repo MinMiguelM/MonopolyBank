@@ -124,6 +124,7 @@ public class UniqueThread extends Thread implements Runnable{
             ObjectOutputStream bufferOut = new ObjectOutputStream(cliente.getOutputStream());
             bufferOut.writeObject(request);
         }
+        bank.initTable();
     }
     
     public void compra() throws Exception{
@@ -149,6 +150,7 @@ public class UniqueThread extends Thread implements Runnable{
                             request.getValue(), "Compra",JOptionPane.INFORMATION_MESSAGE);
             bank.updateTableMoney(request.getFromPlayer(), Integer.parseInt(request.getValue())*-1);
         }
+        bank.initTable();
     }
     
     public void pago() throws Exception{
@@ -159,7 +161,6 @@ public class UniqueThread extends Thread implements Runnable{
             lottery += Integer.parseInt(request.getValue());
             bank.setJTextFieldLottery(lottery+"");
             bank.updateTableMoney(request.getFromPlayer(), Integer.parseInt(request.getValue())*(-1));
-            return;
         }else if(request.getToPlayer() == -2){
             id = request.getFromPlayer();
             bank.updateTableMoney(id, Integer.parseInt(request.getValue())*-1);
@@ -185,6 +186,7 @@ public class UniqueThread extends Thread implements Runnable{
             ObjectOutputStream bufferOut = new ObjectOutputStream(socket.getOutputStream());
             bufferOut.writeObject(request);
         }
+        bank.initTable();
     }
     
 }
