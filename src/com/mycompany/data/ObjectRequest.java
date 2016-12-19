@@ -19,6 +19,9 @@ public class ObjectRequest implements Serializable{
      * 1. Pagar 
      * 2. Peaje / premio / pago / Lottery
      * 3. Game over
+     * 4. Compra
+     * 5. Devolución
+     * 6. Actualizacion de ticket
      */
     private int operation;
     
@@ -27,9 +30,19 @@ public class ObjectRequest implements Serializable{
      * Bank is id = -1
      */
     private int toPlayer;
-    private int value;
+    private String value;
+    private Object object;
+    private int fromPlayer;
     
     public ObjectRequest(){
+    }
+
+    public Object getObject() {
+        return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
     }
 
     public int getOperation() {
@@ -48,11 +61,19 @@ public class ObjectRequest implements Serializable{
         this.toPlayer = toPlayer;
     }
 
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(String value) {
         this.value = value;
+    }
+
+    public int getFromPlayer() {
+        return fromPlayer;
+    }
+
+    public void setFromPlayer(int fromPlayer) {
+        this.fromPlayer = fromPlayer;
     }
 }

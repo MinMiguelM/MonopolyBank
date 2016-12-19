@@ -24,11 +24,13 @@ public class Ticket implements Serializable{
     private static final long serialVersionUID = 1L;
     
     private Map<Integer,Player> players;
-    private List<Property> properties;
+    private Map<Integer,Property> propertiesAvailable;
+    private Map<Integer,Property> propertiesSold;
     
     public Ticket(){
         players = new HashMap<>();
-        properties = new ArrayList<>();
+        propertiesAvailable = new HashMap<>();
+        propertiesSold = new HashMap<>();
     }
 
     public Map<Integer, Player> getPlayers() {
@@ -39,17 +41,26 @@ public class Ticket implements Serializable{
         this.players = players;
     }
 
-    public List<Property> getProperties() {
-        return properties;
+    public Map<Integer, Property> getPropertiesAvailable() {
+        return propertiesAvailable;
     }
 
-    public void setProperties(List<Property> properties) {
-        this.properties = properties;
+    public void setPropertiesAvailable(Map<Integer, Property> propertiesAvailable) {
+        this.propertiesAvailable = propertiesAvailable;
+    }
+
+    public Map<Integer, Property> getPropertiesSold() {
+        return propertiesSold;
+    }
+
+    public void setPropertiesSold(Map<Integer, Property> propertiesSold) {
+        this.propertiesSold = propertiesSold;
     }
     
     public void loadProperties() throws Exception{
         Map<String,Integer> ret = new HashMap<String,Integer>();
         Property prop = null;
+        int id = 0;
         try{
             FileInputStream in = new FileInputStream("data/cards.mpy");
             BufferedReader bf = new BufferedReader(new InputStreamReader(in));
@@ -59,7 +70,7 @@ public class Ticket implements Serializable{
                 String name = tok.nextToken();
                 int price = Integer.parseInt(tok.nextToken());
                 prop = new Property(name,price);
-                this.properties.add(prop);
+                this.propertiesAvailable.put(id++,prop);
                 str = bf.readLine();
             }
             in.close();

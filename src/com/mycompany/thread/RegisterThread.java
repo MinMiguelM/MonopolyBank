@@ -48,6 +48,7 @@ public class RegisterThread extends Thread implements Runnable{
                 if(!exit){
                     ObjectInputStream buffer = new ObjectInputStream(cliente.getInputStream());
                     Player player = (Player)buffer.readObject();
+                    player.setPrison(0);
                     players.put(lastId, player);
                     playersSocket.put(lastId++, cliente);
                     main.addToTable(player.getName());

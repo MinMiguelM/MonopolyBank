@@ -61,9 +61,11 @@ public class BankWin extends javax.swing.JFrame {
         };
         model.addColumn("Nombre jugador");
         model.addColumn("Veces en carcel");
+        model.addColumn("Saldo");
         Set<Integer> set = players.keySet();
         for (Integer integer : set) {
-            model.addRow(new Object[]{players.get(integer).getName(),0});
+            model.addRow(new Object[]{players.get(integer).getName(),
+                players.get(integer).getPrison(),players.get(integer).getMoney()});
         }
         jTable1.setModel(model);
         jScrollPane1.setViewportView(jTable1);
@@ -85,6 +87,11 @@ public class BankWin extends javax.swing.JFrame {
                 return players.get(i);
         }
         return null;
+    }
+    
+    public void updateTableMoney(int id, int value){
+        players.get(id).setMoney(players.get(id).getMoney()+value);
+        initTable();
     }
     
     public void deletePlayer(int id){
@@ -361,9 +368,8 @@ public class BankWin extends javax.swing.JFrame {
         if(selection == -1){
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
-            int prison = (int) jTable1.getValueAt(selection, 1);
-            prison++;
-            jTable1.setValueAt(prison, selection, 1);
+            players.get(selection).setPrison(players.get(selection).getPrison()+1);
+            initTable();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -376,9 +382,10 @@ public class BankWin extends javax.swing.JFrame {
             int prison = (int) jTable1.getValueAt(selection, 1);
             prison--;
             if(prison < 0)
-                jTable1.setValueAt(0, selection, 1);
+                players.get(selection).setPrison(0);
             else
-                jTable1.setValueAt(prison, selection, 1);
+                players.get(selection).setPrison(prison);
+            initTable();
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -394,12 +401,14 @@ public class BankWin extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null,"Jugador no puede recibir peaje",
                         "ERROR",JOptionPane.ERROR_MESSAGE);
             else{
+                players.get(selection).setMoney(players.get(selection).getMoney()+toll);
                 Player player = findPlayer(name);
                 ObjectRequest obj = new ObjectRequest();
                 obj.setOperation(2);
-                obj.setValue(toll);
+                obj.setValue(toll+"");
                 SendThread st = new SendThread(obj,player);
                 st.start();
+                initTable();
             }
         }
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -410,13 +419,15 @@ public class BankWin extends javax.swing.JFrame {
         if(selection == -1){
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
+            players.get(selection).setMoney(players.get(selection).getMoney()+Integer.parseInt(jTextField3.getText()));
             String name = (String)jTable1.getValueAt(selection, 0);
             Player player = findPlayer(name);
             ObjectRequest obj = new ObjectRequest();
             obj.setOperation(2);
-            obj.setValue(Integer.parseInt(jTextField3.getText()));
+            obj.setValue(jTextField3.getText());
             SendThread st = new SendThread(obj,player);
             st.start();
+            initTable();
         }
         jTextField3.setText("0");
     }//GEN-LAST:event_jButton5ActionPerformed
@@ -427,13 +438,15 @@ public class BankWin extends javax.swing.JFrame {
         if(selection == -1){
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
+            players.get(selection).setMoney(players.get(selection).getMoney()+Integer.parseInt(jTextField1.getText()));
             String name = (String)jTable1.getValueAt(selection, 0);
             Player player = findPlayer(name);
             ObjectRequest obj = new ObjectRequest();
             obj.setOperation(2);
-            obj.setValue(Integer.parseInt(jTextField1.getText()));
+            obj.setValue(jTextField1.getText());
             SendThread st = new SendThread(obj,player);
             st.start();
+            initTable();
             jTextField1.setText("0");
         }
     }//GEN-LAST:event_jButton3ActionPerformed
