@@ -72,6 +72,20 @@ public class UniqueThread extends Thread implements Runnable{
                 ticket.getPropertiesSold().remove(i);
             }
         }
+        bank.setTicket(ticket);
+        return ticket;
+    }
+    
+    public Ticket deleteProperty(String name,Ticket ticket){
+        Map<Integer,Property> map = new HashMap<>(ticket.getPropertiesAvailable());
+        Set<Integer> set = map.keySet();
+        for(Integer i : set) {
+            if (map.get(i).getName().equals(name)) {
+                ticket.getPropertiesSold().put(i, map.get(i));
+                ticket.getPropertiesAvailable().remove(i);
+            }
+        }
+        bank.setTicket(ticket);
         return ticket;
     }
 
@@ -98,7 +112,7 @@ public class UniqueThread extends Thread implements Runnable{
             if(option == JOptionPane.YES_OPTION){
                 Set<Integer> set = bank.getPlayers().keySet();
                 request.setOperation(6);
-                request.setObject(addProperty(request.getValue(), (Ticket)request.getObject()));
+                request.setObject(addProperty(request.getValue(), bank.getTicket()));
                 for (Integer i : set) {
                     socket = new Socket(bank.getPlayers().get(i).getIp(), port);
                     ObjectOutputStream bufferOut = new ObjectOutputStream(socket.getOutputStream());
@@ -135,12 +149,11 @@ public class UniqueThread extends Thread implements Runnable{
                             request.getValue(), "Compra",JOptionPane.INFORMATION_MESSAGE);
             Set<Integer> set = bank.getPlayers().keySet();
             request.setOperation(6);
+            request.setObject(deleteProperty(request.getValue(), bank.getTicket()));
             for (Integer i : set) {
-                if(request.getFromPlayer() != i){
-                    socket = new Socket(bank.getPlayers().get(i).getIp(), port);
-                    ObjectOutputStream bufferOut = new ObjectOutputStream(socket.getOutputStream());
-                    bufferOut.writeObject(request);
-                }
+                socket = new Socket(bank.getPlayers().get(i).getIp(), port);
+                ObjectOutputStream bufferOut = new ObjectOutputStream(socket.getOutputStream());
+                bufferOut.writeObject(request);
             }
             bank.updateTableMoney(request.getFromPlayer(), 
                         getProperty(request.getValue(), (Ticket)request.getObject()).getValue()*-1);

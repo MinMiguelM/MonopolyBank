@@ -7,6 +7,7 @@ package com.mycompany.GUI;
 
 import com.mycompany.data.ObjectRequest;
 import com.mycompany.data.Player;
+import com.mycompany.data.Ticket;
 import com.mycompany.thread.CoordinatorThread;
 import com.mycompany.thread.SendThread;
 import java.awt.Color;
@@ -24,7 +25,7 @@ import jdk.nashorn.internal.scripts.JO;
  */
 public class BankWin extends javax.swing.JFrame {
 
-    private Map<Integer,Player> players;
+    private Ticket ticket;
     private CoordinatorThread ct;
     private int toll;
     private ImageIcon img = new ImageIcon(getClass().getResource("/iconos/icon.png"));
@@ -32,14 +33,14 @@ public class BankWin extends javax.swing.JFrame {
     /**
      * Creates new form BankWin
      */
-    public BankWin(Map<Integer,Player> players, String toll) {
+    public BankWin(Ticket ticket, String toll) {
         initComponents();
         initImages();
         setIconImage(img.getImage());
         this.setResizable(false);
         this.setTitle("Banco virtual");
         this.getContentPane().setBackground(Color.white);
-        this.players = players;
+        this.ticket = ticket;
         initTable();
         ct = new CoordinatorThread(this);
         ct.start();
@@ -47,7 +48,15 @@ public class BankWin extends javax.swing.JFrame {
     }
     
     public Map<Integer,Player> getPlayers(){
-        return this.players;
+        return this.ticket.getPlayers();
+    }
+    
+    public Ticket getTicket(){
+        return this.ticket;
+    }
+    
+    public void setTicket(Ticket ticket){
+        this.ticket = ticket;
     }
     
     public void initTable(){
@@ -62,10 +71,10 @@ public class BankWin extends javax.swing.JFrame {
         model.addColumn("Nombre jugador");
         model.addColumn("Veces en carcel");
         model.addColumn("Saldo");
-        Set<Integer> set = players.keySet();
+        Set<Integer> set = ticket.getPlayers().keySet();
         for (Integer integer : set) {
-            model.addRow(new Object[]{players.get(integer).getName(),
-                players.get(integer).getPrison(),players.get(integer).getMoney()});
+            model.addRow(new Object[]{ticket.getPlayers().get(integer).getName(),
+                ticket.getPlayers().get(integer).getPrison(),ticket.getPlayers().get(integer).getMoney()});
         }
         jTable1.setModel(model);
         jScrollPane1.setViewportView(jTable1);
@@ -81,26 +90,27 @@ public class BankWin extends javax.swing.JFrame {
     }
     
     public Player findPlayer(String name){
-        Set<Integer> set = players.keySet();
+        Set<Integer> set = ticket.getPlayers().keySet();
         for(Integer i: set){
-            if(players.get(i).getName().equals(name))
-                return players.get(i);
+            if(ticket.getPlayers().get(i).getName().equals(name))
+                return ticket.getPlayers().get(i);
         }
         return null;
     }
     
     public void updateTableMoney(int id, int value){
-        players.get(id).setMoney(players.get(id).getMoney()+value);
+        ticket.getPlayers().get(id).
+                setMoney(ticket.getPlayers().get(id).getMoney()+value);
     }
     
     public void deletePlayer(int id){
-        players.remove(id);
+        ticket.getPlayers().remove(id);
     }
     
     public int findIDPlayer(String name){
-        Set<Integer> set = players.keySet();
+        Set<Integer> set = ticket.getPlayers().keySet();
         for(Integer i: set){
-            if(players.get(i).getName().equals(name))
+            if(ticket.getPlayers().get(i).getName().equals(name))
                 return i;
         }
         return -1;
@@ -368,7 +378,8 @@ public class BankWin extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
             int id = findIDPlayer(jTable1.getValueAt(selection, 0).toString());
-            players.get(id).setPrison(players.get(id).getPrison()+1);
+            ticket.getPlayers().get(id).
+                    setPrison(ticket.getPlayers().get(id).getPrison()+1);
             initTable();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -383,9 +394,9 @@ public class BankWin extends javax.swing.JFrame {
             int prison = (int) jTable1.getValueAt(selection, 1);
             prison--;
             if(prison < 0)
-                players.get(id).setPrison(0);
+                ticket.getPlayers().get(id).setPrison(0);
             else
-                players.get(id).setPrison(prison);
+                ticket.getPlayers().get(id).setPrison(prison);
             initTable();
         }
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -403,7 +414,8 @@ public class BankWin extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null,"Jugador no puede recibir peaje",
                         "ERROR",JOptionPane.ERROR_MESSAGE);
             else{
-                players.get(id).setMoney(players.get(id).getMoney()+toll);
+                ticket.getPlayers().get(id).
+                        setMoney(ticket.getPlayers().get(id).getMoney()+toll);
                 Player player = findPlayer(name);
                 ObjectRequest obj = new ObjectRequest();
                 obj.setOperation(2);
@@ -422,7 +434,8 @@ public class BankWin extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
             int id = findIDPlayer(jTable1.getValueAt(selection, 0).toString());
-            players.get(id).setMoney(players.get(id).getMoney()+Integer.parseInt(jTextField3.getText()));
+            ticket.getPlayers().get(id).
+                    setMoney(ticket.getPlayers().get(id).getMoney()+Integer.parseInt(jTextField3.getText()));
             String name = (String)jTable1.getValueAt(selection, 0);
             Player player = findPlayer(name);
             ObjectRequest obj = new ObjectRequest();
@@ -442,7 +455,8 @@ public class BankWin extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,"Seleccione un jugador","ERROR",JOptionPane.ERROR_MESSAGE);
         }else{
             int id = findIDPlayer(jTable1.getValueAt(selection, 0).toString());
-            players.get(id).setMoney(players.get(id).getMoney()+Integer.parseInt(jTextField1.getText()));
+            ticket.getPlayers().get(id).
+                    setMoney(ticket.getPlayers().get(id).getMoney()+Integer.parseInt(jTextField1.getText()));
             String name = (String)jTable1.getValueAt(selection, 0);
             Player player = findPlayer(name);
             ObjectRequest obj = new ObjectRequest();
@@ -466,7 +480,7 @@ public class BankWin extends javax.swing.JFrame {
             ObjectRequest obj = new ObjectRequest();
             obj.setOperation(3);
             obj.setToPlayer(id);
-            SendThread st = new SendThread(players, obj,this);
+            SendThread st = new SendThread(ticket.getPlayers(), obj,this);
             st.start();
         }
     }//GEN-LAST:event_jButton6ActionPerformed

@@ -60,8 +60,8 @@ public class RegisterThread extends Thread implements Runnable{
         }
     }
     
-    public synchronized Map<Integer,Player> getPlayers(){
-        return this.players;
+    public synchronized Ticket getTicket(){
+        return this.ticket;
     }
     
     public void exit(int money) throws Exception{
