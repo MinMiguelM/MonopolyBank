@@ -8,6 +8,7 @@ package com.mycompany.thread;
 import com.mycompany.data.Player;
 import com.mycompany.data.Ticket;
 import com.mycompany.GUI.MainGUI;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -15,6 +16,9 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -26,16 +30,21 @@ public class RegisterThread extends Thread implements Runnable{
     private Map<Integer,Socket> playersSocket;
     private boolean exit;
     private Ticket ticket;
+    private Ticket lastTicket;
     private int lastId;
     private MainGUI main;
+    private int option;
     
-    public RegisterThread(MainGUI main){
+    public RegisterThread(MainGUI main,int option,Ticket ticket){
         exit = false;
         players = new HashMap<>();
         playersSocket = new HashMap<>();
-        ticket = new Ticket();
+        this.ticket = new Ticket();
         lastId = 0;
         this.main = main;
+        this.option = option;
+        if(option == 1)
+            lastTicket = ticket;
     }
     
     @Override
@@ -43,6 +52,7 @@ public class RegisterThread extends Thread implements Runnable{
         ServerSocket socket = null;
         try{
             socket = new ServerSocket(333);
+            socket.setSoTimeout(300000);
             while(!exit){
                 Socket cliente = socket.accept();
                 if(!exit){
@@ -57,6 +67,12 @@ public class RegisterThread extends Thread implements Runnable{
             socket.close();
         }catch(Exception e){
             e.printStackTrace();
+            exit = true;
+            try {
+                socket.close();
+            } catch (IOException ex) {
+                Logger.getLogger(RegisterThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -64,12 +80,27 @@ public class RegisterThread extends Thread implements Runnable{
         return this.ticket;
     }
     
-    public void exit(int money) throws Exception{
+    public boolean exit(int money) throws Exception{
         this.exit = true;
         Socket cliente = null;
-        this.setMoney(money);
-        ticket.setPlayers(players);
-        ticket.loadProperties();
+        if (option == 0){
+            this.setMoney(money);
+            ticket.setPlayers(players);
+            ticket.loadProperties();
+        }
+        if (option == 1){
+            Set<Integer> set = players.keySet();
+            for (Integer i : set) {
+                if(!setPlayer(i)){
+                    JOptionPane.showMessageDialog(null, 
+                            "Uno de los participantes no estaba en la sesion anterior.","Error",JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            }
+            ticket.setPlayers(players);
+            ticket.setPropertiesAvailable(lastTicket.getPropertiesAvailable());
+            ticket.setPropertiesSold(lastTicket.getPropertiesSold());
+        }
         Set<Integer> playersKey = playersSocket.keySet();
         for (Integer integer : playersKey) {
             // send list of players to each player and the list of properties.
@@ -78,6 +109,20 @@ public class RegisterThread extends Thread implements Runnable{
             bufferOut.writeObject(ticket);
             cliente.close();
         }
+        return true;
+    }
+    
+    public boolean setPlayer(int id){
+        Set<Integer> playersSet = lastTicket.getPlayers().keySet();
+        for (Integer i : playersSet) {
+            if(lastTicket.getPlayers().get(i)
+                    .getName().equalsIgnoreCase(players.get(id).getName())){
+                players.get(id).setMoney(lastTicket.getPlayers().get(i).getMoney());
+                players.get(id).setPrison(lastTicket.getPlayers().get(i).getPrison());
+                return true;
+            }
+        }
+        return false;
     }
     
     public void setMoney(int money){

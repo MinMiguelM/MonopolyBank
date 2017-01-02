@@ -5,6 +5,8 @@
  */
 package com.mycompany.GUI;
 
+import com.mycompany.data.Ticket;
+import com.mycompany.thread.CoordinatorThread;
 import com.mycompany.thread.RegisterThread;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -21,6 +23,15 @@ public class MainGUI extends javax.swing.JFrame {
     
     private RegisterThread rt;
     private ImageIcon img = new ImageIcon(getClass().getResource("/iconos/icon.png"));
+    private Ticket ticket;
+    private String lottery;
+    private CoordinatorThread thread;
+    
+    /**
+     * 0 = Normal register
+     * 1 = Recovery register
+     */
+    private int option;
 
     /**
      * Creates new form MainGUI
@@ -31,8 +42,25 @@ public class MainGUI extends javax.swing.JFrame {
         this.setResizable(false);
         this.setTitle("Electronic monopoly");
         fillTable();
-        rt = new RegisterThread(this);
+        option = 0;
+        rt = new RegisterThread(this,option,null);
         rt.start();
+        lottery = "0";
+    }
+    
+    public MainGUI(Ticket ticket, String lottery,CoordinatorThread thread){
+        initComponents();
+        setIconImage(img.getImage());
+        this.setResizable(false);
+        this.setTitle("Electronic monopoly");
+        fillTable();
+        this.ticket = ticket;
+        this.lottery = lottery;
+        //call a thread
+        option = 1;
+        rt = new RegisterThread(this,option,ticket);
+        rt.start();
+        this.thread = thread;
     }
     
     public void addToTable(String name){
@@ -181,13 +209,28 @@ public class MainGUI extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             // TODO add your handling code here:
-            if(jTextField1.getText().equals("") || jTextField2.getText().equals("")){
-                JOptionPane.showMessageDialog(null, "Campos vacios.","Error",JOptionPane.ERROR_MESSAGE);
+            if(option == 0){
+                if(jTextField1.getText().equals("") || jTextField2.getText().equals("")){
+                    JOptionPane.showMessageDialog(null, "Campos vacios.","Error",JOptionPane.ERROR_MESSAGE);
+                }else{
+                    rt.exit(Integer.parseInt(jTextField1.getText().toString()));
+                    BankWin bank = new BankWin(rt.getTicket(),jTextField2.getText(),lottery,option,null);
+                    this.setVisible(false);
+                    bank.setVisible(true);
+                }
             }else{
-                rt.exit(Integer.parseInt(jTextField1.getText().toString()));
-                BankWin bank = new BankWin(rt.getTicket(),jTextField2.getText());
-                this.setVisible(false);
-                bank.setVisible(true);
+                if(jTextField2.getText().equals("")){
+                    JOptionPane.showMessageDialog(null, "Campo de peaje requerido.","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                if(rt.exit(0)){
+                    BankWin bank = new BankWin(rt.getTicket(),jTextField2.getText(),lottery,option,thread);
+                    this.setVisible(false);
+                    bank.setVisible(true);
+                }else{
+                    fillTable();
+                    rt = new RegisterThread(this,option,ticket);
+                    rt.start();
+                }
             }
         } catch (Exception ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);

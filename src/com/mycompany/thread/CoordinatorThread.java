@@ -45,4 +45,8 @@ public class CoordinatorThread extends Thread implements Runnable{
         }
     }
     
+    public void setBank(BankWin bank){
+        this.bank = bank;
+    }
+    
 }
