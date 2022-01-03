@@ -208,15 +208,15 @@ public class MainGUI extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-            // TODO add your handling code here:
             if(option == 0){
                 if(jTextField1.getText().equals("") || jTextField2.getText().equals("")){
                     JOptionPane.showMessageDialog(null, "Campos vacios.","Error",JOptionPane.ERROR_MESSAGE);
                 }else{
                     rt.exit(Integer.parseInt(jTextField1.getText().toString()));
                     BankWin bank = new BankWin(rt.getTicket(),jTextField2.getText(),lottery,option,null);
-                    this.setVisible(false);
                     bank.setVisible(true);
+                    this.setVisible(false);
+                    this.dispose();
                 }
             }else{
                 if(jTextField2.getText().equals("")){
@@ -224,8 +224,9 @@ public class MainGUI extends javax.swing.JFrame {
                 }
                 if(rt.exit(0)){
                     BankWin bank = new BankWin(rt.getTicket(),jTextField2.getText(),lottery,option,thread);
-                    this.setVisible(false);
                     bank.setVisible(true);
+                    this.setVisible(false);
+                    this.dispose();
                 }else{
                     fillTable();
                     rt = new RegisterThread(this,option,ticket);

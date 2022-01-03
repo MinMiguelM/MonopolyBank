@@ -1,5 +1,5 @@
 # MonopolyBank
-Java SE
+Java SE 8
 
 # Compilación
 Se debe instalar `Apache Ant` desde: https://ant.apache.org/bindownload.cgi, después de que sea instalado se debe configurar las variables de entorno:

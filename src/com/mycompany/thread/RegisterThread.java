@@ -28,15 +28,14 @@ public class RegisterThread extends Thread implements Runnable{
     
     private Map<Integer,Player> players;
     private Map<Integer,Socket> playersSocket;
-    private boolean exit;
     private Ticket ticket;
     private Ticket lastTicket;
     private int lastId;
     private MainGUI main;
     private int option;
+    private ServerSocket serverSocket;
     
     public RegisterThread(MainGUI main,int option,Ticket ticket){
-        exit = false;
         players = new HashMap<>();
         playersSocket = new HashMap<>();
         this.ticket = new Ticket();
@@ -49,29 +48,29 @@ public class RegisterThread extends Thread implements Runnable{
     
     @Override
     public void run(){
-        ServerSocket socket = null;
         try{
-            socket = new ServerSocket(333);
-            socket.setSoTimeout(300000);
-            while(!exit){
-                Socket cliente = socket.accept();
-                if(!exit){
-                    ObjectInputStream buffer = new ObjectInputStream(cliente.getInputStream());
-                    Player player = (Player)buffer.readObject();
-                    player.setPrison(0);
-                    players.put(lastId, player);
-                    playersSocket.put(lastId++, cliente);
-                    main.addToTable(player.getName());
-                }
+            serverSocket = new ServerSocket(333);
+            serverSocket.setSoTimeout(300000);
+            while(true){
+                Socket cliente = serverSocket.accept();
+                ObjectInputStream buffer = new ObjectInputStream(cliente.getInputStream());
+                Player player = (Player)buffer.readObject();
+                System.out.println("New player registered: " + player.getName());
+                player.setPrison(0);
+                players.put(lastId, player);
+                playersSocket.put(lastId++, cliente);
+                main.addToTable(player.getName());
             }
-            socket.close();
-        }catch(Exception e){
+        } catch(Exception e) {
             e.printStackTrace();
-            exit = true;
-            try {
-                socket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(RegisterThread.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                try {
+                    System.out.println("Closing socket in RegisterThread");
+                    serverSocket.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
@@ -80,8 +79,10 @@ public class RegisterThread extends Thread implements Runnable{
         return this.ticket;
     }
     
-    public boolean exit(int money) throws Exception{
-        this.exit = true;
+    public boolean exit(int money) throws Exception {
+        if (!this.serverSocket.isClosed()) {
+            this.serverSocket.close();
+        }
         Socket cliente = null;
         if (option == 0){
             this.setMoney(money);

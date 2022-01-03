@@ -10,6 +10,18 @@
 <project name="MonopolyBank" default="default" basedir=".">
     <description>Builds, tests, and runs the project MonopolyBank.</description>
     <import file="nbproject/build-impl.xml"/>
+    <target name="-post-jar">
+        <sequential>
+            <mkdir dir="${dist.dir}/images"/>
+            <mkdir dir="${dist.dir}/data"/>
+            <copy todir="${dist.dir}/images">
+                <fileset dir="images" />
+            </copy>
+            <copy todir="${dist.dir}/data">
+                <fileset dir="data" />
+            </copy>
+        </sequential>
+    </target>
     <!--
 
     There exist several targets which are by default empty and which can be 

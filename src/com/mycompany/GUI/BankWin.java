@@ -554,8 +554,9 @@ public class BankWin extends javax.swing.JFrame {
                 "Seguro de querer restaurar?", "Restauracion", JOptionPane.YES_NO_CANCEL_OPTION);
         if(option == JOptionPane.YES_OPTION){
             MainGUI main = new MainGUI(ticket,jTextField1.getText(),ct);
-            this.setVisible(false);
             main.setVisible(true);
+            this.setVisible(false);
+            this.dispose();
         }
     }//GEN-LAST:event_jButton7ActionPerformed
 
